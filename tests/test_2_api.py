@@ -1,16 +1,19 @@
 from api.questions_api import api
 from http import HTTPStatus
-#from utils.assertions import Assert
-
+from utils.assertions import Assert
+import re
 
 def test_list_users():
     res = api.list_users()
     user_not_found = api.single_user_not_found()
-
+    print("json",res.json())
+    print('\n')
+    print('text',res.text)
     assert res.status_code == HTTPStatus.OK
     assert  user_not_found.status_code == HTTPStatus.NOT_FOUND
-
-    #Assert.validate_chema(res.json())
+    assert res.headers['Cache-Control'] == 'max-age=14400'
+    Assert.validate_schema(res.json())
+    print(res.headers)
 
 
 def test_single_user():
@@ -19,6 +22,7 @@ def test_single_user():
     print(res_body)
     assert single_user.status_code == HTTPStatus.OK
     assert res_body["data"]["first_name"] == 'Janet'
+    assert re.fullmatch("\w+", res_body['data']["last_name"])
     example = {
         "data": {
             "id": 2,
@@ -39,6 +43,7 @@ def test_create():
     job = 'Tester'
     res = api.create(name, job)
     #res1 = res.create(name,job)
+    assert re.fullmatch(r'\d{1,4}', res.json()['id'])
 
     assert res.status_code == HTTPStatus.CREATED
     assert res.json()['name'] == name
@@ -51,6 +56,7 @@ def test_register():
     res = api.register(password)
     print(res.json(), res.status_code)
     assert res.status_code == HTTPStatus.OK
+    #print(res.raise_for_status())
 
 def test_bad_register():
 
@@ -60,8 +66,9 @@ def test_bad_register():
     example = {
             "error": "Missing password"
     }
-
+    #print(res_bad_request.raise_for_status()) #Если мы сделали неверный запрос (ошибка клиента 4XX или ответ об ошибке сервера 5XX), мы можем поднять его с помощью
     assert res_bad_request.json() == example
+    Assert.validate_schema(res_bad_request.json())
 
 
 
