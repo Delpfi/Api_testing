@@ -16,8 +16,9 @@ def test_robots():
     assert res.status_code == HTTPStatus.OK
     assert res.headers['Content-Type'] == 'text/plain'
     print(res.content.splitlines())
-
-    assert re.fullmatch(r'.*User-agent: \*.*Disallow: /deny.*',res.text,flags=re.DOTALL)
+    x = re.fullmatch(r'User-agent: \*.*Disallow: /deny.*',res.text,flags=re.DOTALL)
+    print(x)
+    assert re.fullmatch(r'User-agent: \*.*Disallow: /deny.*',res.text,flags=re.DOTALL)
 
 def test_ip():
 

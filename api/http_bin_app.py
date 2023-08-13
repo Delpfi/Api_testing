@@ -25,5 +25,5 @@ class HttpBinApi(Client):
             return self.get(url, timeout=delay)
         except Exception as ex:
             return False,ex
-
+#т.к не будет разных объектов, с разными свойства(нет иницелизации в классе) , то можно создать сразу объект и к нему обращаться.
 http_bin_api = HttpBinApi()
